@@ -1,0 +1,44 @@
+Function canCrossChakravyuha(circlePower, current_circle, current_power, back_attack_power, skips_remaining, recharges_remaining):
+    If current_circle equals total_circles:
+        Return True  // Base case: Abhimanyu has crossed all circles.
+
+    can_escape = False
+
+    // Option 1: Attempt to recharge if recharges are available and power is below maximum.
+    If recharges_remaining > 0 AND current_power < initial_power:
+        can_escape = can_escape OR canCrossChakravyuha(circlePower, current_circle, initial_power, back_attack_power, skips_remaining, recharges_remaining - 1)
+
+    // Handle back attack from previously defeated regenerating enemies.
+    If current_power >= back_attack_power:
+        current_power = current_power - back_attack_power
+        back_attack_power = 0
+    Else:
+        Return False  // Abhimanyu is defeated by the back attack.
+
+    // Option 2: Attempt to skip the current circle if skips are available.
+    If skips_remaining > 0:
+        can_escape = can_escape OR canCrossChakravyuha(circlePower, current_circle + 1, current_power, back_attack_power, skips_remaining - 1, recharges_remaining)
+
+    // Option 3: Fight the current enemy if Abhimanyu's power is sufficient.
+    If current_power >= circlePower[current_circle]:
+        If current_circle is 2 OR current_circle is 6:
+            back_attack_power = circlePower[current_circle] / 2  // Regenerating enemies prepare to attack from behind.
+
+        can_escape = can_escape OR canCrossChakravyuha(circlePower, current_circle + 1, current_power - circlePower[current_circle], back_attack_power, skips_remaining, recharges_remaining)
+
+    Return can_escape
+
+// Main execution block.
+Function main():
+    Input circlePower[0...10]  // Powers of the enemies in each circle.
+    Input initial_power, skips_allowed, recharges_allowed  // Abhimanyu's initial power, number of skips, and recharges.
+    
+    Limit skips_allowed to total_circles  // Maximum number of skips cannot exceed the number of circles.
+    Limit recharges_allowed to total_circles  // Maximum number of recharges cannot exceed the number of circles.
+    
+    back_attack_power = 0  // Initialize back attack power.
+    
+    If canCrossChakravyuha(circlePower, 0, initial_power, back_attack_power, skips_allowed, recharges_allowed):
+        Output "Abhimanyu can cross the Chakravyuha"
+    Else:
+        Output "Abhimanyu cannot cross the Chakravyuha"
